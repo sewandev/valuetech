@@ -1,5 +1,6 @@
 <Solution>
   <Project Path="ValueTech.Api/ValueTech.Api.csproj" />
   <Project Path="ValueTech.Data/ValueTech.Data.csproj" />
+  <Project Path="ValueTech.Tests/ValueTech.Tests.csproj" />
   <Project Path="ValueTech.Web/ValueTech.Web.csproj" />
 </Solution>
