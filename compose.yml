@@ -1,0 +1,11 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: valuetech_sql
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=ValueTech123!
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./database/init-scripts:/docker-entrypoint-initdb.d
