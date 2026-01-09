@@ -1,0 +1,29 @@
+@model IEnumerable<ValueTech.Api.Contracts.Responses.RegionResponse>
+
+@{
+    ViewData["Title"] = "Regiones";
+}
+
+<h1>Listado de Regiones</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Región</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.IdRegion</td>
+                <td>@item.Nombre</td>
+                <td>
+                    <a asp-controller="Comuna" asp-action="Index" asp-route-regionId="@item.IdRegion" class="btn btn-primary btn-sm">Ver Comunas</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

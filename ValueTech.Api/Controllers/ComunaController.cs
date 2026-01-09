@@ -39,8 +39,10 @@ namespace ValueTech.Api.Controllers
         {
             if (request.IdRegion != regionId)
             {
-                return BadRequest("El ID de región en la URL no coincide con el cuerpo.");
+                return BadRequest($"El ID de región en la URL ({regionId}) no coincide con el cuerpo ({request.IdRegion}).");
             }
+            
+            Console.WriteLine($"[API Update] RegionId: {regionId}, Request RegionId: {request.IdRegion}, ComunaId: {request.IdComuna}");
 
             await _service.UpdateAsync(request.IdComuna, request);
 
