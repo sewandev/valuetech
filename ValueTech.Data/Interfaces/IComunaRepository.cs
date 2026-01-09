@@ -1,6 +1,6 @@
-using ValueTech.Data.Entities;
+using ValueTech.Data.Models;
 
-namespace ValueTech.Data.Repositories
+namespace ValueTech.Data.Interfaces
 {
     public interface IComunaRepository
     {

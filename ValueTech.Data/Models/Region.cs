@@ -1,4 +1,4 @@
-namespace ValueTech.Data.Entities
+namespace ValueTech.Data.Models
 {
     public class Region
     {

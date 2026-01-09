@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using ValueTech.Data.Repositories;
+using ValueTech.Data.Interfaces;
 
 namespace ValueTech.Data
 {

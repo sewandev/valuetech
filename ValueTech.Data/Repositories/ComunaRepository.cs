@@ -1,6 +1,7 @@
 using Microsoft.Data.SqlClient;
 using System.Data;
-using ValueTech.Data.Entities;
+using ValueTech.Data.Models;
+using ValueTech.Data.Interfaces;
 
 namespace ValueTech.Data.Repositories
 {
