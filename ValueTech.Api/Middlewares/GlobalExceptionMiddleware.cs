@@ -44,13 +44,11 @@ namespace ValueTech.Api.Middlewares
             switch (exception)
             {
                 case ArgumentException argEx:
-                    // Regla 3.3: Errores de validación -> 400 Bad Request
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     response = new { error = argEx.Message }; 
                     break;
                 
                 default:
-                    // Errores no controlados -> 500 Internal Server Error
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     response = new
                     {

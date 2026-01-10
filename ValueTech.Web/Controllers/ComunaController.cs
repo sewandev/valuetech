@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using ValueTech.Web.Services;
 using ValueTech.Api.Contracts.Requests;
 
 namespace ValueTech.Web.Controllers
 {
+    [Authorize]
     public class ComunaController : Controller
     {
         private readonly IApiClient _apiClient;

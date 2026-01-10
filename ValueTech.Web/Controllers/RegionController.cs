@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using ValueTech.Web.Services;
 
 namespace ValueTech.Web.Controllers
 {
+    [Authorize]
     public class RegionController : Controller
     {
         private readonly IApiClient _apiClient;

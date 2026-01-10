@@ -20,6 +20,11 @@ namespace ValueTech.Data
                 return new ComunaRepository(connectionString, logger);
             });
 
+            services.AddScoped<IAuthRepository>(provider => 
+            {
+                return new AuthRepository(connectionString);
+            });
+
             return services;
         }
     }

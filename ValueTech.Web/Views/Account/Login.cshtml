@@ -1,0 +1,52 @@
+@model ValueTech.Api.Contracts.Requests.LoginRequest
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-lg" style="border: none; border-radius: 12px; overflow: hidden;">
+            <div class="card-header text-white text-center py-4" style="background-color: var(--vt-primary);">
+                <h3 class="mb-0">Bienvenido</h3>
+                <p class="mb-0 text-white-50">Ingresa tus credenciales</p>
+            </div>
+            <div class="card-body p-4 bg-white">
+                <form asp-action="Login">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="vt-alert vt-alert-danger" role="alert">
+                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>@TempData["ErrorMessage"]</span>
+                        </div>
+                    }
+
+                    <div class="form-floating mb-3">
+                        <input asp-for="Username" class="form-control" placeholder="Usuario" />
+                        <label asp-for="Username">Usuario</label>
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-floating mb-4">
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Contraseña" />
+                        <label asp-for="Password">Contraseña</label>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">Ingresar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 bg-light">
+                <small class="text-muted">Prueba Técnica &copy; 2026</small>
+            </div>
+        </div>
+    </div>
+</div>

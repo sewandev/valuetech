@@ -9,10 +9,16 @@ namespace ValueTech.Web.Services
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _options;
 
-        public ApiClient(HttpClient httpClient)
+        public ApiClient(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            
+            var apiKey = configuration.GetValue<string>("Authentication:ApiKey");
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                _httpClient.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
+            }
         }
 
         public async Task<IEnumerable<RegionResponse>> GetRegionsAsync()
@@ -62,6 +68,17 @@ namespace ValueTech.Web.Services
                 
                 response.EnsureSuccessStatusCode();
             }
+            }
+
+        public async Task<bool> ValidateUserAsync(string username, string password)
+        {
+            var loginRequest = new { Username = username, Password = password };
+            var json = JsonSerializer.Serialize(loginRequest);
+            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("/api/auth/login", content);
+            
+            return response.IsSuccessStatusCode;
         }
     }
 }

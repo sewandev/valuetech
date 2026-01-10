@@ -1,9 +1,9 @@
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 using ValueTech.Data;
 using ValueTech.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString))
@@ -19,6 +19,17 @@ builder.Services.AddScoped<IComunaService, ComunaService>();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddFixedWindowLimiter("fixed", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 100;
+        limiterOptions.Window = TimeSpan.FromMinutes(1);
+        limiterOptions.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+        limiterOptions.QueueLimit = 2;
+    });
+});
 
 var app = builder.Build();
 
@@ -33,11 +44,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseMiddleware<ValueTech.Api.Middlewares.GlobalExceptionMiddleware>();
+
+app.UseRateLimiter(); // Activar Rate Limiting
+app.UseMiddleware<ValueTech.Api.Middlewares.ApiKeyMiddleware>();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers()
+   .RequireRateLimiting("fixed"); // Aplicar politica globalmente o por controlador
 
 app.Run();

@@ -9,5 +9,6 @@ namespace ValueTech.Web.Services
         Task<IEnumerable<ComunaResponse>> GetComunasByRegionAsync(int regionId);
         Task<ComunaResponse?> GetComunaByIdAsync(int regionId, int comunaId);
         Task UpdateComunaAsync(int regionId, UpdateComunaRequest request);
+        Task<bool> ValidateUserAsync(string username, string password);
     }
 }

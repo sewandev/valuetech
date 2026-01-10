@@ -27,6 +27,19 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Region" asp-action="Index">Regiones</a>
                         </li>
                     </ul>
+                    <ul class="navbar-nav">
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">Hola, <b>@User.Identity.Name</b></span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm" class="form-inline">
+                                    <button type="submit" class="nav-link btn btn-link text-dark" style="border:none; background:none; cursor:pointer;">Salir</button>
+                                </form>
+                            </li>
+                        }
+                    </ul>
                 </div>
             </div>
         </nav>
