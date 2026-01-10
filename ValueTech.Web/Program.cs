@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
-builder.Services.AddHttpContextAccessor(); // Required for ApiClient to get User/IP
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -15,7 +15,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 builder.Services.AddHttpClient<IApiClient, ApiClient>(client =>
 {
-    client.BaseAddress = new Uri("http://localhost:5105");
+    var baseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5105";
+    client.BaseAddress = new Uri(baseUrl);
 });
 
 var app = builder.Build();

@@ -9,3 +9,63 @@ services:
       - "1433:1433"
     volumes:
       - ./database/init-scripts:/docker-entrypoint-initdb.d
+      - sqldata:/var/opt/mssql
+    networks:
+      - valuetech-net
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ValueTech123! -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 3s
+
+  migrator:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: valuetech_migrator
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./database/init-scripts:/init-scripts
+      - ./database/init-db.sh:/init-db.sh
+    command: /bin/bash /init-db.sh
+    networks:
+      - valuetech-net
+
+  api:
+    build:
+      context: .
+      dockerfile: ValueTech.Api/Dockerfile
+    container_name: valuetech_api
+    depends_on:
+      migrator:
+        condition: service_completed_successfully
+    ports:
+      - "5105:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ValueTechDB;User Id=sa;Password=ValueTech123!;TrustServerCertificate=True;
+      - Authentication__ApiKey=ValueTech-Secret-Key-2026
+    networks:
+      - valuetech-net
+
+  web:
+    build:
+      context: .
+      dockerfile: ValueTech.Web/Dockerfile
+    container_name: valuetech_web
+    depends_on:
+      - api
+    ports:
+      - "5000:8080"
+    environment:
+      - ApiBaseUrl=http://valuetech_api:8080
+      - Authentication__ApiKey=ValueTech-Secret-Key-2026
+    networks:
+      - valuetech-net
+
+networks:
+  valuetech-net:
+    driver: bridge
+
+volumes:
+  sqldata:
