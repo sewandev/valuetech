@@ -7,6 +7,10 @@
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
 
+## Documentación
+
+* [Requerimientos del desarrollo](ValueTech.Docs/PruebaDesarrollador.md)
+
 ## Stack Tecnológico
 
 La solución ha sido construida utilizando un stack tecnológico moderno y robusto, seleccionado para cumplir con los estándares de rendimiento y escalabilidad de nivel empresarial.
