@@ -1,65 +1,72 @@
 services:
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: valuetech_sql
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=ValueTech123!
+    image: mcr.microsoft.com/mssql/server:2022-latest
     ports:
       - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=ValueTech_2024!
+      - TZ=America/Santiago
     volumes:
-      - ./database/init-scripts:/docker-entrypoint-initdb.d
-      - sqldata:/var/opt/mssql
+      - sql_data:/var/opt/mssql
     networks:
       - valuetech-net
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P ValueTech123! -C -Q 'SELECT 1' || exit 1"]
-      interval: 10s
-      retries: 5
-      start_period: 10s
-      timeout: 3s
 
   migrator:
-    image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: valuetech_migrator
+    image: mcr.microsoft.com/mssql-tools:latest
     depends_on:
-      sqlserver:
-        condition: service_healthy
+      - sqlserver
     volumes:
-      - ./database/init-scripts:/init-scripts
-      - ./database/init-db.sh:/init-db.sh
-    command: /bin/bash /init-db.sh
+      - ./database/init-scripts:/scripts
     networks:
       - valuetech-net
+    environment:
+      - TZ=America/Santiago
+    command: >
+      /bin/bash -c "
+      echo 'Esperando a SQL Server...';
+      sleep 15;
+      /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d master -i /scripts/01-schema.sql;
+      /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d ValueTechDB -i /scripts/02-procedures.sql;
+      /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d ValueTechDB -i /scripts/03-seed-data.sql;
+      /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d ValueTechDB -i /scripts/04-seed-chile.sql;
+      /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d ValueTechDB -i /scripts/05-create-users.sql;
+      /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d ValueTechDB -i /scripts/06-create-audit.sql;
+      "
 
   api:
+    container_name: valuetech_api
     build:
       context: .
       dockerfile: ValueTech.Api/Dockerfile
-    container_name: valuetech_api
-    depends_on:
-      migrator:
-        condition: service_completed_successfully
     ports:
       - "5105:8080"
     environment:
-      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=ValueTechDB;User Id=sa;Password=ValueTech123!;TrustServerCertificate=True;
+      - ConnectionStrings__DefaultConnection=Server=valuetech_sql;Database=ValueTechDB;User Id=sa;Password=ValueTech_2024!;TrustServerCertificate=True;
       - Authentication__ApiKey=ValueTech-Secret-Key-2026
+      - ASPNETCORE_ENVIRONMENT=Development
+      - TZ=America/Santiago
+    depends_on:
+      - sqlserver
     networks:
       - valuetech-net
 
   web:
+    container_name: valuetech_web
     build:
       context: .
       dockerfile: ValueTech.Web/Dockerfile
-    container_name: valuetech_web
-    depends_on:
-      - api
     ports:
       - "5000:8080"
     environment:
       - ApiBaseUrl=http://valuetech_api:8080
       - Authentication__ApiKey=ValueTech-Secret-Key-2026
+      - ASPNETCORE_ENVIRONMENT=Production
+      - TZ=America/Santiago
+    depends_on:
+      - api
     networks:
       - valuetech-net
 
@@ -68,4 +75,4 @@ networks:
     driver: bridge
 
 volumes:
-  sqldata:
+  sql_data:

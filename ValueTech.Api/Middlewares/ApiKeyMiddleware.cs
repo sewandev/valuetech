@@ -12,6 +12,12 @@ namespace ValueTech.Api.Middlewares
 
         public async Task InvokeAsync(HttpContext context, IConfiguration configuration)
         {
+            if (context.Request.Path.StartsWithSegments("/swagger") || context.Request.Path.StartsWithSegments("/openapi"))
+            {
+                await _next(context);
+                return;
+            }
+
             if (!context.Request.Headers.TryGetValue(API_KEY_HEADER, out var extractedApiKey))
             {
                 context.Response.StatusCode = 401; // Unauthorized

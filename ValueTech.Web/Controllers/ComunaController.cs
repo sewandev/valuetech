@@ -67,7 +67,21 @@ namespace ValueTech.Web.Controllers
             }
             catch (Exception ex)
             {
-                var msg = ex.Message.Replace("Error actualizando comuna: ", "");
+                var msg = ex.Message;
+                var parts = msg.Split(new[] { " - " }, 2, StringSplitOptions.None);
+                if (parts.Length > 1)
+                {
+                    try 
+                    {
+                        var json = System.Text.Json.JsonDocument.Parse(parts[1]);
+                        if (json.RootElement.TryGetProperty("error", out var errorProp))
+                        {
+                            msg = errorProp.GetString() ?? parts[1];
+                        }
+                    }
+                    catch { /* Fallback to raw message if not valid JSON */ }
+                }
+                
                 TempData["ErrorMessage"] = msg;
                 return View(model);
             }

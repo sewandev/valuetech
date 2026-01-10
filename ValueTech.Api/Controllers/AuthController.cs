@@ -22,7 +22,15 @@ namespace ValueTech.Api.Controllers
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var user = await _repository.ValidateUserAsync(request.Username, request.Password);
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown"; // Added IP address retrieval
+            string ip = "Unknown";
+            if (Request.Headers.TryGetValue("X-Audit-IP", out var headerIp))
+            {
+                ip = headerIp.ToString();
+            }
+            else
+            {
+                ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+            }
             
             if (user == null)
             {

@@ -13,6 +13,14 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LogoutPath = "/Account/Logout";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     });
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedFor | Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 builder.Services.AddHttpClient<IApiClient, ApiClient>(client =>
 {
     var baseUrl = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5105";
@@ -22,6 +30,7 @@ builder.Services.AddHttpClient<IApiClient, ApiClient>(client =>
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
+    app.UseForwardedHeaders();
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }

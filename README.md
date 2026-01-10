@@ -10,6 +10,7 @@
 ## Documentación
 
 * [Requerimientos del desarrollo](ValueTech.Docs/PruebaDesarrollador.md)
+* [Setup Local](ValueTech.Docs/SETUP_LOCAL.md)
 
 ## Stack Tecnológico
 

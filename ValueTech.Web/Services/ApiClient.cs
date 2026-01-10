@@ -78,6 +78,12 @@ namespace ValueTech.Web.Services
             var loginRequest = new { Username = username, Password = password };
             var json = JsonSerializer.Serialize(loginRequest);
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            
+            var context = _httpContextAccessor.HttpContext;
+            if (context != null)
+            {
+                content.Headers.Add("X-Audit-IP", context.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+            }
 
             var response = await _httpClient.PostAsync("/api/auth/login", content);
             
