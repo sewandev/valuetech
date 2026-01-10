@@ -138,7 +138,7 @@ Una vez desplegado el entorno (Docker o Híbrido), utilice los siguientes acceso
 | :--- | :--- | :--- |
 | **Frontend Web** | [`http://localhost:5000`](http://localhost:5000) | User: `admin` / `admin123` |
 | **API Swagger** | [`http://localhost:5105/swagger`](http://localhost:5105/swagger) | API Key: `ValueTech-Secret-Key-2026` (Botón Authorize) |
-| **API Endpoint** | [`http://localhost:5105`](http://localhost:5105) | Base URL para Postman/Insomnia |
+| **API Endpoint** | [`http://localhost:5105`](http://localhost:5105) | Base URL para Postman |
 | **SQL Server** | `localhost:1433` | User: `sa` / `ValueTech_2024!` |
 
 ---

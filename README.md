@@ -12,6 +12,17 @@
 * [Requerimientos del desarrollo](ValueTech.Docs/PruebaDesarrollador.md)
 * [Setup Local](ValueTech.Docs/SETUP_LOCAL.md)
 
+---
+
+## Acceso rápido de prueba
+
+| Componente | URL | Credenciales / info |
+| :--- | :--- | :--- |
+| **Frontend Web** | [`https://prueba-valuetech.mawan.dev/`](https://prueba-valuetech.mawan.dev/) | User: `admin` / `admin123` |
+| **API Swagger** | [`https://prueba-valuetech.mawan.dev/swagger`](https://prueba-valuetech.mawan.dev/swagger) | API Key: `ValueTech-Secret-Key-2026` (Botón Authorize) |
+| **API Endpoint** | [`https://prueba-valuetech.mawan.dev/api/`](https://prueba-valuetech.mawan.dev/api/) | Base URL para API Client |
+| **SQL Server** | `localhost:1433` | User: `sa` / `ValueTech_2024!` |
+
 ## Stack Tecnológico
 
 La solución ha sido construida utilizando un stack tecnológico moderno y robusto, seleccionado para cumplir con los estándares de rendimiento y escalabilidad de nivel empresarial.
