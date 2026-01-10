@@ -35,7 +35,7 @@ namespace ValueTech.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(int regionId, [FromBody] CreateComunaRequest request)
+        public async Task<IActionResult> Update(int regionId, [FromBody] UpdateComunaRequest request)
         {
             if (request.IdRegion != regionId)
             {

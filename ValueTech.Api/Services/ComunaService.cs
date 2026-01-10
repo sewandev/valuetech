@@ -30,7 +30,7 @@ namespace ValueTech.Api.Services
             return comuna == null ? null : MapToResponse(comuna);
         }
 
-        public async Task UpdateAsync(int idComuna, CreateComunaRequest request)
+        public async Task UpdateAsync(int idComuna, UpdateComunaRequest request)
         {
             // Validaciones de Dominio (Regla 3.3)
             if (request.Superficie < 0) throw new ArgumentException("La superficie no puede ser negativa.");

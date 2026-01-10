@@ -1,6 +1,6 @@
 namespace ValueTech.Api.Contracts.Requests
 {
-    public class CreateComunaRequest
+    public class UpdateComunaRequest
     {
         public int IdComuna { get; set; }
         public int IdRegion { get; set; }

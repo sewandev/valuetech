@@ -29,7 +29,7 @@ namespace ValueTech.Web.Controllers
 
             // Mapeamos Response -> Request para usarlo de ViewModel (Simplificación válida para prueba)
             // O idealmente crear un ComunaViewModel separado. Usaremos el Request DTO para editar.
-            var model = new CreateComunaRequest
+            var model = new UpdateComunaRequest
             {
                 IdComuna = comuna.IdComuna,
                 IdRegion = comuna.IdRegion,
@@ -43,7 +43,7 @@ namespace ValueTech.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int regionId, CreateComunaRequest model)
+        public async Task<IActionResult> Edit(int regionId, UpdateComunaRequest model)
         {
             if (!ModelState.IsValid) return View(model);
 

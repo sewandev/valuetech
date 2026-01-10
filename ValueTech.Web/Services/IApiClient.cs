@@ -8,6 +8,6 @@ namespace ValueTech.Web.Services
         Task<IEnumerable<RegionResponse>> GetRegionsAsync();
         Task<IEnumerable<ComunaResponse>> GetComunasByRegionAsync(int regionId);
         Task<ComunaResponse?> GetComunaByIdAsync(int regionId, int comunaId);
-        Task UpdateComunaAsync(int regionId, CreateComunaRequest request);
+        Task UpdateComunaAsync(int regionId, UpdateComunaRequest request);
     }
 }

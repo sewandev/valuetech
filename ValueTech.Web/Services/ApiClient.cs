@@ -40,7 +40,7 @@ namespace ValueTech.Web.Services
             return JsonSerializer.Deserialize<ComunaResponse>(content, _options);
         }
 
-        public async Task UpdateComunaAsync(int regionId, CreateComunaRequest request)
+        public async Task UpdateComunaAsync(int regionId, UpdateComunaRequest request)
         {
             var json = JsonSerializer.Serialize(request);
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");

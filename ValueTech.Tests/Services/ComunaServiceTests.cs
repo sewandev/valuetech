@@ -79,7 +79,7 @@ namespace ValueTech.Tests.Services
             // Arrange
             var mockRepo = new Mock<IComunaRepository>();
             var comunaId = 5;
-            var request = new Api.Contracts.Requests.CreateComunaRequest
+            var request = new Api.Contracts.Requests.UpdateComunaRequest
             {
                 IdComuna = comunaId,
                 IdRegion = 1,
@@ -90,7 +90,7 @@ namespace ValueTech.Tests.Services
             };
 
             // Capturamos el objeto que llega al repositorio para inspeccionar el XML
-            Comuna capturedEntity = null;
+            Comuna? capturedEntity = null; // Fix CS8600
             mockRepo.Setup(r => r.UpdateAsync(It.IsAny<Comuna>()))
                 .Callback<Comuna>(c => capturedEntity = c)
                 .Returns(Task.CompletedTask);
@@ -103,14 +103,38 @@ namespace ValueTech.Tests.Services
 
             // Assert
             Assert.NotNull(capturedEntity);
-            Assert.Equal("Comuna Update", capturedEntity.Nombre);
+            Assert.Equal("Comuna Update", capturedEntity!.Nombre); // Fix CS8602 context
             
             // Validamos estructura XML
-            var xml = System.Xml.Linq.XElement.Parse(capturedEntity.InformacionAdicional);
+            Assert.NotNull(capturedEntity.InformacionAdicional); // Ensure not null before Parse
+            var xml = System.Xml.Linq.XElement.Parse(capturedEntity.InformacionAdicional!); // Fix CS8604
+            
             Assert.Equal("Info", xml.Name.LocalName);
             Assert.Equal("200.5", xml.Element("Superficie")?.Value);
             Assert.Equal("10000", xml.Element("Poblacion")?.Value);
             Assert.Equal("50.0", xml.Element("Poblacion")?.Attribute("Densidad")?.Value);
+        }
+
+        [Fact]
+        public async Task UpdateAsync_ShouldThrowArgumentException_WhenSuperficieIsNegative()
+        {
+            // Arrange
+            var mockRepo = new Mock<IComunaRepository>();
+            var mockLogger = new Mock<Microsoft.Extensions.Logging.ILogger<ComunaService>>();
+            var service = new ComunaService(mockRepo.Object, mockLogger.Object);
+            
+            var request = new Api.Contracts.Requests.UpdateComunaRequest
+            {
+                IdComuna = 1,
+                Superficie = -50 // Invalid
+            };
+
+            // Act & Assert
+            var ex = await Assert.ThrowsAsync<ArgumentException>(() => service.UpdateAsync(1, request));
+            Assert.Contains("superficie no puede ser negativa", ex.Message);
+            
+            // Verifica que NUNCA se llamó al repositorio
+            mockRepo.Verify(r => r.UpdateAsync(It.IsAny<Comuna>()), Times.Never);
         }
     }
 }

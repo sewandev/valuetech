@@ -7,6 +7,6 @@ namespace ValueTech.Api.Services
     {
         Task<IEnumerable<ComunaResponse>> GetByRegionIdAsync(int regionId);
         Task<ComunaResponse?> GetByIdAsync(int idComuna);
-        Task UpdateAsync(int idComuna, CreateComunaRequest request);
+        Task UpdateAsync(int idComuna, UpdateComunaRequest request);
     }
 }
