@@ -10,11 +10,13 @@ namespace ValueTech.Api.Services
     public class ComunaService : IComunaService
     {
         private readonly IComunaRepository _repository;
+        private readonly IAuditoriaRepository _auditRepository;
         private readonly ILogger<ComunaService> _logger;
 
-        public ComunaService(IComunaRepository repository, ILogger<ComunaService> logger)
+        public ComunaService(IComunaRepository repository, IAuditoriaRepository auditRepository, ILogger<ComunaService> logger)
         {
             _repository = repository;
+            _auditRepository = auditRepository;
             _logger = logger;
         }
 
@@ -30,7 +32,7 @@ namespace ValueTech.Api.Services
             return comuna == null ? null : MapToResponse(comuna);
         }
 
-        public async Task UpdateAsync(int idComuna, UpdateComunaRequest request)
+        public async Task UpdateAsync(int idComuna, UpdateComunaRequest request, string auditUser, string auditIp)
         {
             if (request.Superficie.HasValue && request.Superficie.Value < 0) throw new ArgumentException("La superficie no puede ser negativa.");
             if (request.Poblacion.HasValue && request.Poblacion.Value < 0) throw new ArgumentException("La población no puede ser negativa.");
@@ -53,7 +55,15 @@ namespace ValueTech.Api.Services
             };
 
             await _repository.UpdateAsync(entity);
-            _logger.LogInformation("Comuna {Id} actualizada exitosamente.", idComuna);
+            await _auditRepository.AddAsync(new Auditoria
+            {
+                Usuario = auditUser,
+                IpAddress = auditIp,
+                Accion = "UPDATE_COMUNA",
+                Detalle = $"ComunaId: {idComuna}, RegionId: {request.IdRegion}, Nombre: {request.Nombre}"
+            });
+
+            _logger.LogInformation("Comuna {Id} actualizada exitosamente por {User}.", idComuna, auditUser);
         }
 
         private ComunaResponse MapToResponse(Comuna comuna)

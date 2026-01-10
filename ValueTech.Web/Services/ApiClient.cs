@@ -8,16 +8,41 @@ namespace ValueTech.Web.Services
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _options;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ApiClient(HttpClient httpClient, IConfiguration configuration)
+        public ApiClient(HttpClient httpClient, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
             _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             
             var apiKey = configuration.GetValue<string>("Authentication:ApiKey");
             if (!string.IsNullOrEmpty(apiKey))
             {
                 _httpClient.DefaultRequestHeaders.Add("X-Api-Key", apiKey);
+            }
+        }
+
+        public async Task UpdateComunaAsync(int regionId, UpdateComunaRequest request)
+        {
+            var json = JsonSerializer.Serialize(request);
+            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            var context = _httpContextAccessor.HttpContext;
+            if (context != null)
+            {
+                if (context.User.Identity?.IsAuthenticated == true)
+                {
+                    content.Headers.Add("X-Audit-User", context.User.Identity.Name);
+                }
+                content.Headers.Add("X-Audit-IP", context.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+            }
+            
+            var response = await _httpClient.PutAsync($"/api/region/{regionId}/comuna/{request.IdComuna}", content);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                 var errorContent = await response.Content.ReadAsStringAsync();
+                 throw new HttpRequestException($"Error: {response.StatusCode} - {errorContent}");
             }
         }
 
@@ -46,29 +71,7 @@ namespace ValueTech.Web.Services
             return JsonSerializer.Deserialize<ComunaResponse>(content, _options);
         }
 
-        public async Task UpdateComunaAsync(int regionId, UpdateComunaRequest request)
-        {
-            var json = JsonSerializer.Serialize(request);
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            
-            var response = await _httpClient.PostAsync($"/api/region/{regionId}/comuna", content);
-            
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                try
-                {
-                    using var doc = JsonDocument.Parse(errorContent);
-                    if (doc.RootElement.TryGetProperty("error", out var errorElement))
-                    {
-                        throw new HttpRequestException(errorElement.GetString());
-                    }
-                }
-                catch (JsonException) { } 
-                
-                response.EnsureSuccessStatusCode();
-            }
-            }
+
 
         public async Task<bool> ValidateUserAsync(string username, string password)
         {
@@ -79,6 +82,13 @@ namespace ValueTech.Web.Services
             var response = await _httpClient.PostAsync("/api/auth/login", content);
             
             return response.IsSuccessStatusCode;
+        }
+        public async Task<IEnumerable<Data.Models.Auditoria>> GetAuditLogsAsync()
+        {
+            var response = await _httpClient.GetAsync("/api/auditoria");
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<IEnumerable<Data.Models.Auditoria>>(content, _options) ?? new List<Data.Models.Auditoria>();
         }
     }
 }

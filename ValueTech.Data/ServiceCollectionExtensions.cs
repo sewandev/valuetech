@@ -25,6 +25,11 @@ namespace ValueTech.Data
                 return new AuthRepository(connectionString);
             });
 
+            services.AddScoped<IAuditoriaRepository>(provider => 
+            {
+                return new AuditoriaRepository(connectionString);
+            });
+
             return services;
         }
     }

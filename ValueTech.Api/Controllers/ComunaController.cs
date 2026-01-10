@@ -34,19 +34,19 @@ namespace ValueTech.Api.Controllers
             return Ok(comuna);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Update(int regionId, [FromBody] UpdateComunaRequest request)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateComunaRequest request)
         {
-            if (request.IdRegion != regionId)
+            if (request.IdComuna != id)
             {
-                return BadRequest($"El ID de región en la URL ({regionId}) no coincide con el cuerpo ({request.IdRegion}).");
+                return BadRequest("ID mismatch");
             }
-            
-            Console.WriteLine($"[API Update] RegionId: {regionId}, Request RegionId: {request.IdRegion}, ComunaId: {request.IdComuna}");
 
-            await _service.UpdateAsync(request.IdComuna, request);
+            string auditUser = Request.Headers.TryGetValue("X-Audit-User", out var userVal) ? userVal.ToString() : "Unknown";
+            string auditIp = Request.Headers.TryGetValue("X-Audit-IP", out var ipVal) ? ipVal.ToString() : HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
 
-            return Ok();
+            await _service.UpdateAsync(id, request, auditUser, auditIp);
+            return NoContent();
         }
     }
 }
