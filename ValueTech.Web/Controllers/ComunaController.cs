@@ -17,7 +17,7 @@ namespace ValueTech.Web.Controllers
         public async Task<IActionResult> Index(int regionId)
         {
             var comunas = await _apiClient.GetComunasByRegionAsync(regionId);
-            ViewBag.RegionId = regionId; // Para volver o saber contexto
+            ViewBag.RegionId = regionId;
             return View(comunas);
         }
 
@@ -27,8 +27,6 @@ namespace ValueTech.Web.Controllers
             var comuna = await _apiClient.GetComunaByIdAsync(regionId, id);
             if (comuna == null) return NotFound();
 
-            // Mapeamos Response -> Request para usarlo de ViewModel (Simplificación válida para prueba)
-            // O idealmente crear un ComunaViewModel separado. Usaremos el Request DTO para editar.
             var model = new UpdateComunaRequest
             {
                 IdComuna = comuna.IdComuna,
@@ -45,16 +43,30 @@ namespace ValueTech.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(int regionId, UpdateComunaRequest model)
         {
-            if (!ModelState.IsValid) return View(model);
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .Where(m => !string.IsNullOrWhiteSpace(m))
+                    .Select(msg => msg.Contains("The value") && msg.Contains("is invalid") 
+                                   ? "El tipo de dato ingresado no es válido." 
+                                   : msg);
+                
+                TempData["ErrorMessage"] = "Datos inválidos: " + string.Join(" | ", errors);
+                return View(model);
+            }
 
             try
             {
                 await _apiClient.UpdateComunaAsync(regionId, model);
+                TempData["SuccessMessage"] = "El registro se ha guardado correctamente.";
                 return RedirectToAction("Index", new { regionId = regionId });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error actualizando comuna: " + ex.Message);
+                var msg = ex.Message.Replace("Error actualizando comuna: ", "");
+                TempData["ErrorMessage"] = msg;
                 return View(model);
             }
         }

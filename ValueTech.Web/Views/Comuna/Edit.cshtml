@@ -6,6 +6,18 @@
 
 <h1>Editar Comuna: @Model.Nombre</h1>
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="vt-alert vt-alert-danger" role="alert">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <span>@TempData["ErrorMessage"]</span>
+    </div>
+}
+
 <div class="row">
     <div class="col-md-6">
         <form asp-action="Edit" asp-route-regionId="@Model.IdRegion">
@@ -17,20 +29,17 @@
 
             <div class="form-group mb-3">
                 <label asp-for="Superficie" class="control-label"></label>
-                <input asp-for="Superficie" class="form-control" type="number" step="0.01" /> <!-- step para decimales -->
-                <span asp-validation-for="Superficie" class="text-danger"></span>
+                <input asp-for="Superficie" class="form-control" type="number" step="0.01" />
             </div>
 
             <div class="form-group mb-3">
                 <label asp-for="Poblacion" class="control-label"></label>
                 <input asp-for="Poblacion" class="form-control" type="number" />
-                <span asp-validation-for="Poblacion" class="text-danger"></span>
             </div>
 
             <div class="form-group mb-3">
                 <label asp-for="Densidad" class="control-label"></label>
                 <input asp-for="Densidad" class="form-control" type="number" step="0.01" />
-                <span asp-validation-for="Densidad" class="text-danger"></span>
             </div>
 
             <div class="form-group">

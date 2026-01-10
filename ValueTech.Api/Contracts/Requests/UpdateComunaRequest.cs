@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace ValueTech.Api.Contracts.Requests
 {
     public class UpdateComunaRequest
@@ -5,8 +7,14 @@ namespace ValueTech.Api.Contracts.Requests
         public int IdComuna { get; set; }
         public int IdRegion { get; set; }
         public string Nombre { get; set; } = string.Empty;
-        public decimal Superficie { get; set; }
-        public int Poblacion { get; set; }
-        public decimal Densidad { get; set; }
+
+        [Required(ErrorMessage = "La Superficie es obligatoria.")]
+        public decimal? Superficie { get; set; }
+
+        [Required(ErrorMessage = "La Población es obligatoria.")]
+        public int? Poblacion { get; set; }
+
+        [Required(ErrorMessage = "La Densidad es obligatoria.")]
+        public decimal? Densidad { get; set; }
     }
 }

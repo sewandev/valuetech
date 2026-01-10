@@ -1,3 +1,22 @@
+/* Variable Definitions for Theme */
+:root {
+  --vt-primary: #5A7D9A;
+  /* Muted Slate Blue */
+  --vt-secondary: #8DA399;
+  /* Sage Green */
+  --vt-accent: #E0B0B0;
+  /* Dusty Rose (Subtle) */
+  --vt-bg: #F4F7F9;
+  /* Very light cool gray */
+  --vt-surface: #FFFFFF;
+  /* White */
+  --vt-text-main: #2C3E50;
+  /* Dark Slate */
+  --vt-text-muted: #6C757D;
+  --vt-border-radius: 12px;
+  --vt-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
 html {
   font-size: 14px;
 }
@@ -8,24 +27,190 @@ html {
   }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
+  background-color: var(--vt-bg);
+  color: var(--vt-text-main);
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
   margin-bottom: 60px;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+/* Navbar Customization */
+.navbar {
+  background-color: var(--vt-surface) !important;
+  box-shadow: var(--vt-shadow);
+  border-bottom: none !important;
+  padding: 1rem 0;
+}
+
+.navbar-brand {
+  color: var(--vt-primary) !important;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.nav-link {
+  color: var(--vt-text-muted) !important;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--vt-primary) !important;
+}
+
+/* Cards & Containers */
+.container main {
+  background-color: var(--vt-surface);
+  border-radius: var(--vt-border-radius);
+  padding: 2rem;
+  box-shadow: var(--vt-shadow);
+  margin-top: 2rem;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--vt-primary);
+  border-color: var(--vt-primary);
+  border-radius: 8px;
+  padding: 0.5rem 1.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background-color: #4A6882;
+  /* Darker shade of primary */
+  border-color: #4A6882;
+  transform: translateY(-1px);
+}
+
+/* Tables */
+.table {
+  border-collapse: separate;
+  border-spacing: 0 0.5rem;
+}
+
+.table thead th {
+  border-bottom: 2px solid var(--vt-secondary);
+  color: var(--vt-primary);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.table tbody tr {
+  background-color: var(--vt-surface);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: transform 0.1s;
+}
+
+.table tbody tr:hover {
+  transform: scale(1.005);
+  z-index: 10;
+}
+
+/* Validation Errors */
+.text-danger {
+  color: var(--vt-accent) !important;
+}
+
+/* Typography Enhancements */
+h1.display-4 {
+  font-weight: 800;
+  color: var(--vt-primary);
+  margin-bottom: 1.5rem;
+}
+
+p.lead {
+  color: var(--vt-text-muted);
+}
+
+/* Footer */
+.footer {
+  background-color: transparent;
+  border-top: none !important;
+  color: var(--vt-text-muted);
+}
+
+
+.form-floating>.form-control-plaintext::placeholder,
+.form-floating>.form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+/* Notification Toast */
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.vt-toast {
+  background-color: #C1E1C1;
+  /* Default/Success: Pastel Green */
+  color: #2E5A2E;
+  padding: 1rem 1.5rem;
+  border-radius: var(--vt-border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: slideIn 0.3s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.vt-toast.error {
+  background-color: #F8C4C4;
+  /* Pastel Red */
+  color: #8B2E2E;
+  /* Dark Red Text */
+}
+
+.vt-toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.vt-toast.hide {
+  animation: fadeOut 0.5s ease-in forwards;
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* Static Alerts (In-Page) */
+.vt-alert {
+  padding: 1rem 1.5rem;
+  border-radius: var(--vt-border-radius);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid transparent;
+}
+
+.vt-alert-danger {
+  background-color: #F8C4C4;
+  /* Pastel Red */
+  color: #8B2E2E;
+  /* Dark Red Text */
+  border-color: #E0B0B0;
 }

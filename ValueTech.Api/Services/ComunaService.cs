@@ -32,18 +32,15 @@ namespace ValueTech.Api.Services
 
         public async Task UpdateAsync(int idComuna, UpdateComunaRequest request)
         {
-            // Validaciones de Dominio (Regla 3.3)
-            if (request.Superficie < 0) throw new ArgumentException("La superficie no puede ser negativa.");
-            if (request.Poblacion < 0) throw new ArgumentException("La población no puede ser negativa.");
-            if (request.Densidad < 0) throw new ArgumentException("La densidad no puede ser negativa.");
+            if (request.Superficie.HasValue && request.Superficie.Value < 0) throw new ArgumentException("La superficie no puede ser negativa.");
+            if (request.Poblacion.HasValue && request.Poblacion.Value < 0) throw new ArgumentException("La población no puede ser negativa.");
+            if (request.Densidad.HasValue && request.Densidad.Value < 0) throw new ArgumentException("La densidad no puede ser negativa.");
 
-            // Construccion Estricta de XML (Regla 3.2 Escritura)
-            // CultureInfo.InvariantCulture asegurado
             var xml = new XElement("Info",
-                new XElement("Superficie", request.Superficie.ToString(CultureInfo.InvariantCulture)),
+                new XElement("Superficie", request.Superficie.GetValueOrDefault().ToString(CultureInfo.InvariantCulture)),
                 new XElement("Poblacion", 
-                    new XAttribute("Densidad", request.Densidad.ToString(CultureInfo.InvariantCulture)),
-                    request.Poblacion
+                    new XAttribute("Densidad", request.Densidad.GetValueOrDefault().ToString(CultureInfo.InvariantCulture)),
+                    request.Poblacion.GetValueOrDefault()
                 )
             );
 
@@ -74,7 +71,6 @@ namespace ValueTech.Api.Services
                 {
                     var xml = XElement.Parse(comuna.InformacionAdicional);
                     
-                    // Parsing defensivo (Regla 3.2 Lectura)
                     if (decimal.TryParse(xml.Element("Superficie")?.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var sup))
                     {
                         response.Superficie = sup;
@@ -95,9 +91,7 @@ namespace ValueTech.Api.Services
                 }
                 catch (Exception ex)
                 {
-                    // Regla 3.2: Registrar error pero NO lanzar excepción
                     _logger.LogError(ex, "Error parseando XML para Comuna {Id}. XML: {Xml}", comuna.IdComuna, comuna.InformacionAdicional);
-                    // Se devuelven valores por defecto (0)
                 }
             }
 
