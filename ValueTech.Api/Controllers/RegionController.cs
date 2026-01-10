@@ -25,8 +25,9 @@ namespace ValueTech.Api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<RegionResponse>> GetById(int id)
         {
-            var regions = await _service.GetAllAsync();
-            var region = regions.FirstOrDefault(r => r.IdRegion == id);
+            if (id <= 0) return BadRequest("El ID de región debe ser positivo."); // Validación 2.2
+
+            var region = await _service.GetByIdAsync(id);
             
             if (region == null) return NotFound();
             

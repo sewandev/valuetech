@@ -10,6 +10,17 @@ BEGIN
 END
 GO
 
+-- SP: Obtener Region por ID
+CREATE OR ALTER PROCEDURE [dbo].[sp_Region_GetById]
+    @IdRegion int
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT IdRegion, Region FROM Region
+    WHERE IdRegion = @IdRegion;
+END
+GO
+
 -- SP: Obtener Comunas por Region
 CREATE OR ALTER PROCEDURE [dbo].[sp_Comuna_GetByRegion]
     @IdRegion int

@@ -21,5 +21,17 @@ namespace ValueTech.Api.Services
                 Nombre = r.Nombre 
             });
         }
+
+        public async Task<RegionResponse?> GetByIdAsync(int id)
+        {
+            var region = await _repository.GetByIdAsync(id);
+            if (region == null) return null;
+            
+            return new RegionResponse
+            {
+                IdRegion = region.IdRegion,
+                Nombre = region.Nombre
+            };
+        }
     }
 }

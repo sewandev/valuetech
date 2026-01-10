@@ -8,8 +8,17 @@ namespace ValueTech.Data
     {
         public static IServiceCollection AddDataLayer(this IServiceCollection services, string connectionString)
         {
-            services.AddScoped<IRegionRepository>(provider => new RegionRepository(connectionString));
-            services.AddScoped<IComunaRepository>(provider => new ComunaRepository(connectionString));
+            services.AddScoped<IRegionRepository>(provider => 
+            {
+                var logger = provider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<RegionRepository>>();
+                return new RegionRepository(connectionString, logger);
+            });
+            
+            services.AddScoped<IComunaRepository>(provider => 
+            {
+                var logger = provider.GetRequiredService<Microsoft.Extensions.Logging.ILogger<ComunaRepository>>();
+                return new ComunaRepository(connectionString, logger);
+            });
 
             return services;
         }

@@ -2,16 +2,19 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using ValueTech.Data.Models;
 using ValueTech.Data.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace ValueTech.Data.Repositories
 {
     public class ComunaRepository : IComunaRepository
     {
         private readonly string _connectionString;
+        private readonly Microsoft.Extensions.Logging.ILogger<ComunaRepository> _logger;
 
-        public ComunaRepository(string connectionString)
+        public ComunaRepository(string connectionString, Microsoft.Extensions.Logging.ILogger<ComunaRepository> logger)
         {
             _connectionString = connectionString;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<Comuna>> GetByRegionIdAsync(int regionId)
@@ -84,7 +87,19 @@ namespace ValueTech.Data.Repositories
                     };
                     command.Parameters.Add(xmlParam);
 
-                    await command.ExecuteNonQueryAsync();
+                    try 
+                    {
+                        var rows = await command.ExecuteNonQueryAsync();
+                        if (rows == 0) // Regla 4.2 Robustez
+                        {
+                            _logger.LogWarning("La actualización de Comuna {Id} no afectó ninguna fila (posible ID inexistente).", comuna.IdComuna);
+                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Error SQL actualizando Comuna {Id}.", comuna.IdComuna);
+                        throw; // Re-throw para que lo maneje el middleware o servicio si aplica
+                    }
                 }
             }
         }

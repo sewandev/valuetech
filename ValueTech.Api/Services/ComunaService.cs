@@ -10,10 +10,12 @@ namespace ValueTech.Api.Services
     public class ComunaService : IComunaService
     {
         private readonly IComunaRepository _repository;
+        private readonly ILogger<ComunaService> _logger;
 
-        public ComunaService(IComunaRepository repository)
+        public ComunaService(IComunaRepository repository, ILogger<ComunaService> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         public async Task<IEnumerable<ComunaResponse>> GetByRegionIdAsync(int regionId)
@@ -30,8 +32,13 @@ namespace ValueTech.Api.Services
 
         public async Task UpdateAsync(int idComuna, CreateComunaRequest request)
         {
-            // Construir XML a mano o con XElement
-            // <Info><Superficie>...</Superficie><Poblacion Densidad="...">...</Poblacion></Info>
+            // Validaciones de Dominio (Regla 3.3)
+            if (request.Superficie < 0) throw new ArgumentException("La superficie no puede ser negativa.");
+            if (request.Poblacion < 0) throw new ArgumentException("La población no puede ser negativa.");
+            if (request.Densidad < 0) throw new ArgumentException("La densidad no puede ser negativa.");
+
+            // Construccion Estricta de XML (Regla 3.2 Escritura)
+            // CultureInfo.InvariantCulture asegurado
             var xml = new XElement("Info",
                 new XElement("Superficie", request.Superficie.ToString(CultureInfo.InvariantCulture)),
                 new XElement("Poblacion", 
@@ -49,6 +56,7 @@ namespace ValueTech.Api.Services
             };
 
             await _repository.UpdateAsync(entity);
+            _logger.LogInformation("Comuna {Id} actualizada exitosamente.", idComuna);
         }
 
         private ComunaResponse MapToResponse(Comuna comuna)
@@ -66,7 +74,7 @@ namespace ValueTech.Api.Services
                 {
                     var xml = XElement.Parse(comuna.InformacionAdicional);
                     
-                    // Parsing defensivo
+                    // Parsing defensivo (Regla 3.2 Lectura)
                     if (decimal.TryParse(xml.Element("Superficie")?.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out var sup))
                     {
                         response.Superficie = sup;
@@ -85,10 +93,11 @@ namespace ValueTech.Api.Services
                         }
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // Si el XML está corrupto, devolvemos valores por defecto (0)
-                    // Podríamos loggear el error aquí
+                    // Regla 3.2: Registrar error pero NO lanzar excepción
+                    _logger.LogError(ex, "Error parseando XML para Comuna {Id}. XML: {Xml}", comuna.IdComuna, comuna.InformacionAdicional);
+                    // Se devuelven valores por defecto (0)
                 }
             }
 

@@ -34,6 +34,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<ValueTech.Api.Middlewares.GlobalExceptionMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllers();

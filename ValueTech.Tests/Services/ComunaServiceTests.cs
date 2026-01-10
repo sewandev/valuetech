@@ -12,6 +12,7 @@ namespace ValueTech.Tests.Services
         {
             // Arrange
             var mockRepo = new Mock<IComunaRepository>();
+            var mockLogger = new Mock<Microsoft.Extensions.Logging.ILogger<ComunaService>>();
             var comunaId = 1;
             var rawXml = @"<Info>
                              <Superficie>150.5</Superficie>
@@ -28,7 +29,7 @@ namespace ValueTech.Tests.Services
             mockRepo.Setup(repo => repo.GetByIdAsync(comunaId))
                 .ReturnsAsync(comunaEntity);
 
-            var service = new ComunaService(mockRepo.Object);
+            var service = new ComunaService(mockRepo.Object, mockLogger.Object);
 
             // Act
             var result = await service.GetByIdAsync(comunaId);
@@ -59,7 +60,8 @@ namespace ValueTech.Tests.Services
             mockRepo.Setup(repo => repo.GetByIdAsync(comunaId))
                 .ReturnsAsync(comunaEntity);
 
-            var service = new ComunaService(mockRepo.Object);
+            var mockLogger = new Mock<Microsoft.Extensions.Logging.ILogger<ComunaService>>();
+            var service = new ComunaService(mockRepo.Object, mockLogger.Object);
 
             // Act
             var result = await service.GetByIdAsync(comunaId);
@@ -93,7 +95,8 @@ namespace ValueTech.Tests.Services
                 .Callback<Comuna>(c => capturedEntity = c)
                 .Returns(Task.CompletedTask);
 
-            var service = new ComunaService(mockRepo.Object);
+            var mockLogger = new Mock<Microsoft.Extensions.Logging.ILogger<ComunaService>>();
+            var service = new ComunaService(mockRepo.Object, mockLogger.Object);
 
             // Act
             await service.UpdateAsync(comunaId, request);
