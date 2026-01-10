@@ -6,6 +6,7 @@
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![Bootstrap](https://img.shields.io/badge/bootstrap-%238511FA.svg?style=for-the-badge&logo=bootstrap&logoColor=white)
+![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
 
 ## Documentación
 
@@ -30,6 +31,7 @@ La solución ha sido construida utilizando un stack tecnológico moderno y robus
 ### Backend & Core
 *   **Lenguaje**: C# 13 / .NET 10
 *   **API Framework**: ASP.NET Core Web API
+*   **Documentación API**: Swagger UI (Swashbuckle)
 *   **Arquitectura**: 3-Layer (Data, Service, API) + Repository Pattern
 *   **Testing**: xUnit, Moq, Coverage Analysis
 
