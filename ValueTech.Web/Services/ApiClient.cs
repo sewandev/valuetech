@@ -46,7 +46,22 @@ namespace ValueTech.Web.Services
             var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             
             var response = await _httpClient.PostAsync($"/api/region/{regionId}/comuna", content);
-            response.EnsureSuccessStatusCode();
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                try
+                {
+                    using var doc = JsonDocument.Parse(errorContent);
+                    if (doc.RootElement.TryGetProperty("error", out var errorElement))
+                    {
+                        throw new HttpRequestException(errorElement.GetString());
+                    }
+                }
+                catch (JsonException) { } 
+                
+                response.EnsureSuccessStatusCode();
+            }
         }
     }
 }
