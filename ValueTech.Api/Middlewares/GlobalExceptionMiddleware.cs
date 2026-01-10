@@ -22,7 +22,15 @@ namespace ValueTech.Api.Middlewares
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocurrió una excepción no controlada: {Message}", ex.Message);
+                if (ex is ArgumentException)
+                {
+                    _logger.LogWarning("Error de validación de negocio: {Message}", ex.Message);
+                }
+                else
+                {
+                    _logger.LogError(ex, "Ocurrió una excepción no controlada: {Message}", ex.Message);
+                }
+
                 await HandleExceptionAsync(context, ex);
             }
         }
@@ -30,13 +38,27 @@ namespace ValueTech.Api.Middlewares
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-            var response = new
+            object response;
+
+            switch (exception)
             {
-                error = "Ha ocurrido un error interno en el servidor. Por favor contacte al administrador.",
-                detail = exception.Message // En producción, esto debería ocultarse o ser genérico.
-            };
+                case ArgumentException argEx:
+                    // Regla 3.3: Errores de validación -> 400 Bad Request
+                    context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    response = new { error = argEx.Message }; 
+                    break;
+                
+                default:
+                    // Errores no controlados -> 500 Internal Server Error
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    response = new
+                    {
+                        error = "Ha ocurrido un error interno en el servidor. Por favor contacte al administrador.",
+                        detail = exception.Message // En producción, esto debería ocultarse o ser genérico.
+                    };
+                    break;
+            }
 
             var json = JsonSerializer.Serialize(response);
             return context.Response.WriteAsync(json);
