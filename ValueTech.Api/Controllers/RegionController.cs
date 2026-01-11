@@ -33,5 +33,14 @@ namespace ValueTech.Api.Controllers
             
             return Ok(region);
         }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            string auditUser = Request.Headers.TryGetValue("X-Audit-User", out var userVal) ? userVal.ToString() : "Unknown";
+            string auditIp = Request.Headers.TryGetValue("X-Audit-IP", out var ipVal) ? ipVal.ToString() : HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+
+            await _service.DeleteAsync(id, auditUser, auditIp);
+            return NoContent();
+        }
     }
 }

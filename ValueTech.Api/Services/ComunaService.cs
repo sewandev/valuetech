@@ -107,5 +107,18 @@ namespace ValueTech.Api.Services
 
             return response;
         }
+        public async Task DeleteAsync(int id, string auditUser, string auditIp)
+        {
+            await _repository.DeleteAsync(id);
+            await _auditRepository.AddAsync(new Auditoria
+            {
+                Usuario = auditUser,
+                IpAddress = auditIp,
+                Accion = "DELETE_COMUNA",
+                Detalle = $"ComunaId: {id}"
+            });
+            _logger.LogInformation("Comuna {Id} eliminada exitosamente por {User}.", id, auditUser);
+        }
     }
 }
+

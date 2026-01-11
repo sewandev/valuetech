@@ -11,5 +11,7 @@ namespace ValueTech.Web.Services
         Task UpdateComunaAsync(int regionId, UpdateComunaRequest request);
         Task<bool> ValidateUserAsync(string username, string password);
         Task<IEnumerable<Data.Models.Auditoria>> GetAuditLogsAsync();
+        Task DeleteRegionAsync(int id);
+        Task DeleteComunaAsync(int regionId, int comunaId);
     }
 }

@@ -80,5 +80,28 @@ namespace ValueTech.Data.Repositories
             }
             return null;
         }
+        public async Task DeleteAsync(int idRegion)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand("sp_Region_Delete", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@IdRegion", idRegion);
+
+                    try
+                    {
+                        await command.ExecuteNonQueryAsync();
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Error eliminando región {Id}.", idRegion);
+                        throw;
+                    }
+                }
+            }
+        }
     }
 }

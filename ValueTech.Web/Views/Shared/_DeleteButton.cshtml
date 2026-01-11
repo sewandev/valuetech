@@ -1,0 +1,24 @@
+@model dynamic
+@{
+    // Modelo esperado:
+    // - Action: Nombre de la acción (ej: "DeleteRegion")
+    // - Controller: (Opcional) Nombre del controlador si es diferente
+    // - RouteValues: Objeto con parámetros de ruta (ej: { id = 5 })
+    // - ConfirmMessage: Mensaje para el diálogo de confirmación
+    
+    // Convertir RouteValues a diccionario para pasarlo a asp-all-route-data
+    var routeValues = new Dictionary<string, string>();
+    if (Model.RouteValues != null)
+    {
+        foreach (var prop in Model.RouteValues.GetType().GetProperties())
+        {
+            routeValues.Add(prop.Name, prop.GetValue(Model.RouteValues).ToString());
+        }
+    }
+}
+
+<form asp-action="@Model.Action" asp-all-route-data="@routeValues" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('@Model.ConfirmMessage');" title="Eliminar">
+        🗑️
+    </button>
+</form>

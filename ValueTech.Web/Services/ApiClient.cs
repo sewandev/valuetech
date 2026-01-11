@@ -23,6 +23,72 @@ namespace ValueTech.Web.Services
             }
         }
 
+        public async Task DeleteRegionAsync(int id)
+        {
+            var context = _httpContextAccessor.HttpContext;
+            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"/api/region/{id}");
+
+            if (context != null)
+            {
+                if (context.User.Identity?.IsAuthenticated == true)
+                {
+                    requestMessage.Headers.Add("X-Audit-User", context.User.Identity.Name);
+                }
+                requestMessage.Headers.Add("X-Audit-IP", context.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+            }
+
+            var response = await _httpClient.SendAsync(requestMessage);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                 var errorContent = await response.Content.ReadAsStringAsync();
+                 try 
+                 {
+                     var errorObj = JsonSerializer.Deserialize<JsonElement>(errorContent);
+                     if(errorObj.TryGetProperty("detail", out var detail)) 
+                     {
+                         throw new HttpRequestException(detail.GetString());
+                     }
+                 } 
+                 catch (JsonException) { /* Fallback to raw content if not JSON */ }
+
+                 throw new HttpRequestException($"Error: {response.StatusCode} - {errorContent}");
+            }
+        }
+
+        public async Task DeleteComunaAsync(int regionId, int comunaId)
+        {
+            var context = _httpContextAccessor.HttpContext;
+            var requestMessage = new HttpRequestMessage(HttpMethod.Delete, $"/api/region/{regionId}/comuna/{comunaId}");
+
+            if (context != null)
+            {
+                if (context.User.Identity?.IsAuthenticated == true)
+                {
+                    requestMessage.Headers.Add("X-Audit-User", context.User.Identity.Name);
+                }
+                requestMessage.Headers.Add("X-Audit-IP", context.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+            }
+
+            var response = await _httpClient.SendAsync(requestMessage);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                 var errorContent = await response.Content.ReadAsStringAsync();
+                 try 
+                 {
+                     var errorObj = JsonSerializer.Deserialize<JsonElement>(errorContent);
+                     if(errorObj.TryGetProperty("detail", out var detail)) 
+                     {
+                         throw new HttpRequestException(detail.GetString());
+                     }
+                 } 
+                 catch (JsonException) { /* Fallback to raw content if not JSON */ }
+
+                 throw new HttpRequestException($"Error: {response.StatusCode} - {errorContent}");
+            }
+        }
+
         public async Task UpdateComunaAsync(int regionId, UpdateComunaRequest request)
         {
             var json = JsonSerializer.Serialize(request);

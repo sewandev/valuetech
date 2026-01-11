@@ -6,5 +6,6 @@ namespace ValueTech.Api.Services
     {
         Task<IEnumerable<RegionResponse>> GetAllAsync();
         Task<RegionResponse?> GetByIdAsync(int id);
+        Task DeleteAsync(int id, string auditUser, string auditIp);
     }
 }

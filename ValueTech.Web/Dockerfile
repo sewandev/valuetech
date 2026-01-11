@@ -21,7 +21,14 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./ValueTech.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
+
+FROM build AS dev
+WORKDIR "/src/ValueTech.Web"
+ENTRYPOINT ["dotnet", "watch", "run", "--no-launch-profile", "--urls", "http://0.0.0.0:8080"]
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+USER root
 ENTRYPOINT ["dotnet", "ValueTech.Web.dll"]
+

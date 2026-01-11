@@ -64,7 +64,6 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    // app.MapOpenApi(); // Removed
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {

@@ -104,6 +104,38 @@ namespace ValueTech.Data.Repositories
             }
         }
 
+        public async Task DeleteAsync(int idComuna)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand("sp_Comuna_Delete", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@IdComuna", idComuna);
+
+                    try
+                    {
+                        var rowsAffected = await command.ExecuteNonQueryAsync();
+                        if (rowsAffected == 0)
+                        {
+                            _logger.LogWarning("La eliminación de Comuna {Id} no afectó ninguna fila (posible ID inexistente).", idComuna);
+                        }
+                        else
+                        {
+                            _logger.LogInformation("Comuna {Id} eliminada exitosamente.", idComuna);
+                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Error SQL eliminando Comuna {Id}.", idComuna);
+                        throw;
+                    }
+                }
+            }
+        }
+
         private Comuna MapToComuna(SqlDataReader reader)
         {
             var c = new Comuna

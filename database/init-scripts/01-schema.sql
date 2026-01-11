@@ -9,8 +9,6 @@ GO
 
 USE ValueTechDB;
 GO
-
--- Tabla: Region
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Region]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[Region](
@@ -23,8 +21,6 @@ BEGIN
     )
 END
 GO
-
--- Tabla: Comuna
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Comuna]') AND type in (N'U'))
 BEGIN
     CREATE TABLE [dbo].[Comuna](

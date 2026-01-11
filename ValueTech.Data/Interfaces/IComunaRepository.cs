@@ -7,5 +7,6 @@ namespace ValueTech.Data.Interfaces
         Task<IEnumerable<Comuna>> GetByRegionIdAsync(int regionId);
         Task<Comuna?> GetByIdAsync(int idComuna);
         Task UpdateAsync(Comuna comuna);
+        Task DeleteAsync(int idComuna);
     }
 }

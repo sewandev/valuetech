@@ -9,7 +9,7 @@ services:
       - MSSQL_SA_PASSWORD=ValueTech_2024!
       - TZ=America/Santiago
     volumes:
-      - sql_data:/var/opt/mssql
+      - sql_data_v2:/var/opt/mssql
     networks:
       - valuetech-net
 
@@ -41,6 +41,7 @@ services:
     build:
       context: .
       dockerfile: ValueTech.Api/Dockerfile
+      target: dev
     ports:
       - "5105:8080"
     environment:
@@ -48,6 +49,9 @@ services:
       - Authentication__ApiKey=ValueTech-Secret-Key-2026
       - ASPNETCORE_ENVIRONMENT=Development
       - TZ=America/Santiago
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
+    volumes:
+      - .:/src
     depends_on:
       - sqlserver
     networks:
@@ -58,13 +62,18 @@ services:
     build:
       context: .
       dockerfile: ValueTech.Web/Dockerfile
+      target: dev
     ports:
       - "5000:8080"
+    volumes:
+      - keys_data:/app/keys
+      - .:/src
     environment:
       - ApiBaseUrl=http://valuetech_api:8080
       - Authentication__ApiKey=ValueTech-Secret-Key-2026
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - TZ=America/Santiago
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
     depends_on:
       - api
     networks:
@@ -75,4 +84,5 @@ networks:
     driver: bridge
 
 volumes:
-  sql_data:
+  sql_data_v2:
+  keys_data:

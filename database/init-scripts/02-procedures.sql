@@ -1,7 +1,5 @@
 USE ValueTechDB;
 GO
-
--- SP: Obtener todas las Regiones
 CREATE OR ALTER PROCEDURE [dbo].[sp_Region_GetAll]
 AS
 BEGIN
@@ -9,8 +7,6 @@ BEGIN
     SELECT IdRegion, Region FROM Region;
 END
 GO
-
--- SP: Obtener Region por ID
 CREATE OR ALTER PROCEDURE [dbo].[sp_Region_GetById]
     @IdRegion int
 AS
@@ -20,8 +16,6 @@ BEGIN
     WHERE IdRegion = @IdRegion;
 END
 GO
-
--- SP: Obtener Comunas por Region
 CREATE OR ALTER PROCEDURE [dbo].[sp_Comuna_GetByRegion]
     @IdRegion int
 AS
@@ -32,8 +26,6 @@ BEGIN
     WHERE IdRegion = @IdRegion;
 END
 GO
-
--- SP: Obtener Comuna por ID
 CREATE OR ALTER PROCEDURE [dbo].[sp_Comuna_GetById]
     @IdComuna int
 AS
@@ -44,10 +36,6 @@ BEGIN
     WHERE IdComuna = @IdComuna;
 END
 GO
-
--- SP: Actualizar Comuna usando MERGE (REGLA MANDATORIA)
--- Nota: La regla pide MERGE para "La actualización". 
--- Se diseñó para recibir datos y actualizar la fila correspondiente.
 CREATE OR ALTER PROCEDURE [dbo].[sp_Comuna_Update]
     @IdComuna int,
     @IdRegion int,
@@ -65,8 +53,27 @@ BEGIN
             IdRegion = @IdRegion,
             Comuna = @Comuna,
             InformacionAdicional = @InformacionAdicional;
-            
-    -- No se implementa WHEN NOT MATCHED INSERT porque Id es Identity y el verbo es Update
-    -- pero el MERGE es obligatorio por regla.
+END
+GO
+CREATE OR ALTER PROCEDURE [dbo].[sp_Region_Delete]
+    @IdRegion int
+AS
+BEGIN
+    SET NOCOUNT ON;
+    IF EXISTS (SELECT 1 FROM Comuna WHERE IdRegion = @IdRegion)
+    BEGIN
+        RAISERROR('No se puede eliminar la región porque tiene comunas asociadas.', 16, 1);
+        RETURN;
+    END
+
+    DELETE FROM Region WHERE IdRegion = @IdRegion;
+END
+GO
+CREATE OR ALTER PROCEDURE [dbo].[sp_Comuna_Delete]
+    @IdComuna int
+AS
+BEGIN
+    SET NOCOUNT ON;
+    DELETE FROM Comuna WHERE IdComuna = @IdComuna;
 END
 GO

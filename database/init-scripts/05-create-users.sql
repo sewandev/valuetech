@@ -12,8 +12,6 @@ BEGIN
         [IdUsuario] ASC
     )
     )
-
-    -- Seed Admin
     INSERT INTO [dbo].[Usuario] (Username, Password) VALUES ('admin', 'admin123');
 END
 GO

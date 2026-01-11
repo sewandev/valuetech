@@ -6,5 +6,6 @@ namespace ValueTech.Data.Interfaces
     {
         Task<IEnumerable<Region>> GetAllAsync();
         Task<Region?> GetByIdAsync(int idRegion);
+        Task DeleteAsync(int idRegion);
     }
 }

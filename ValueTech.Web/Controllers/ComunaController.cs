@@ -85,6 +85,30 @@ namespace ValueTech.Web.Controllers
                 TempData["ErrorMessage"] = msg;
                 return View(model);
             }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteComuna(int regionId, int id)
+        {
+            try
+            {
+                await _apiClient.DeleteComunaAsync(regionId, id);
+                TempData["SuccessMessage"] = "Comuna eliminada correctamente.";
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.Message;
+                try 
+                {
+                   if(msg.Contains("Error:")) msg = msg.Split(new[] { " - " }, 2, StringSplitOptions.None).LastOrDefault() ?? msg;
+                   var json = System.Text.Json.JsonDocument.Parse(msg);
+                   if (json.RootElement.TryGetProperty("detail", out var detail)) msg = detail.GetString() ?? msg;
+                } catch { }
+
+                TempData["ErrorMessage"] = "No se pudo eliminar la comuna. " + msg;
+            }
+            return RedirectToAction("Index", new { regionId = regionId });
         }
     }
 }

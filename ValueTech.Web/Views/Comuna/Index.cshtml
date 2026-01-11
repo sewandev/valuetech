@@ -29,8 +29,9 @@
                 <td>@item.Superficie</td>
                 <td>@item.Poblacion</td>
                 <td>@item.Densidad</td>
-                <td>
+                <td class="d-flex justify-content-between align-items-center">
                     <a asp-action="Edit" asp-route-regionId="@item.IdRegion" asp-route-id="@item.IdComuna" class="btn btn-warning btn-sm">Editar</a>
+                    <partial name="_DeleteButton" model="@(new { Action = "DeleteComuna", RouteValues = new { regionId = item.IdRegion, id = item.IdComuna }, ConfirmMessage = "¿Está seguro de que desea eliminar esta comuna?" })" />
                 </td>
             </tr>
         }
