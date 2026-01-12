@@ -20,9 +20,7 @@ jobs:
           key: ${{ secrets.SSH_PEM_KEY }}
           source: "."
           target: "/home/ubuntu/valuetech"
-          # Exclude .git folder to save time and space
           rm: true 
-          # "rm: true" cleans the target folder before copy, ensuring clean slate (optional but safe)
       
       - name: Execute Remote Docker Compose
         uses: appleboy/ssh-action@master
