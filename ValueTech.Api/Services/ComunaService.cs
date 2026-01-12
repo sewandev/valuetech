@@ -34,17 +34,8 @@ namespace ValueTech.Api.Services
 
         public async Task UpdateAsync(int idComuna, UpdateComunaRequest request, string auditUser, string auditIp)
         {
-            if (request.Superficie.HasValue && request.Superficie.Value < 0) throw new ArgumentException("La superficie no puede ser negativa.");
-            if (request.Poblacion.HasValue && request.Poblacion.Value < 0) throw new ArgumentException("La población no puede ser negativa.");
-            if (request.Densidad.HasValue && request.Densidad.Value < 0) throw new ArgumentException("La densidad no puede ser negativa.");
-
-            var xml = new XElement("Info",
-                new XElement("Superficie", request.Superficie.GetValueOrDefault().ToString(CultureInfo.InvariantCulture)),
-                new XElement("Poblacion", 
-                    new XAttribute("Densidad", request.Densidad.GetValueOrDefault().ToString(CultureInfo.InvariantCulture)),
-                    request.Poblacion.GetValueOrDefault()
-                )
-            );
+            ValidateComunaMetrics(request.Superficie, request.Poblacion, request.Densidad);
+            var xml = BuildComunaXml(request.Superficie, request.Poblacion, request.Densidad);
 
             var entity = new Comuna
             {
@@ -55,15 +46,49 @@ namespace ValueTech.Api.Services
             };
 
             await _repository.UpdateAsync(entity);
-            await _auditRepository.AddAsync(new Auditoria
-            {
-                Usuario = auditUser,
-                IpAddress = auditIp,
-                Accion = "UPDATE_COMUNA",
-                Detalle = $"ComunaId: {idComuna}, RegionId: {request.IdRegion}, Nombre: {request.Nombre}"
-            });
-
+            await LogAuditAsync(auditUser, auditIp, "UPDATE_COMUNA", $"ComunaId: {idComuna}, RegionId: {request.IdRegion}, Nombre: {request.Nombre}");
             _logger.LogInformation("Comuna {Id} actualizada exitosamente por {User}.", idComuna, auditUser);
+        }
+
+        public async Task<int> CreateAsync(CreateComunaRequest request, string auditUser, string auditIp)
+        {
+            ValidateComunaMetrics(request.Superficie, request.Poblacion, request.Densidad);
+            var xml = BuildComunaXml(request.Superficie, request.Poblacion, request.Densidad);
+
+            var entity = new Comuna
+            {
+                IdRegion = request.IdRegion,
+                Nombre = request.Nombre,
+                InformacionAdicional = xml.ToString(SaveOptions.DisableFormatting)
+            };
+
+            var newId = await _repository.CreateAsync(entity);
+            await LogAuditAsync(auditUser, auditIp, "CREATE_COMUNA", $"NewId: {newId}, RegionId: {request.IdRegion}, Nombre: {request.Nombre}");
+            _logger.LogInformation("Comuna {Id} creada exitosamente por {User}.", newId, auditUser);
+            return newId;
+        }
+
+        private void ValidateComunaMetrics(decimal? superficie, int? poblacion, decimal? densidad)
+        {
+            if (superficie.HasValue && superficie.Value < 0) throw new ArgumentException("La superficie no puede ser negativa.");
+            if (poblacion.HasValue && poblacion.Value < 0) throw new ArgumentException("La población no puede ser negativa.");
+            if (densidad.HasValue && densidad.Value < 0) throw new ArgumentException("La densidad no puede ser negativa.");
+        }
+
+        private XElement BuildComunaXml(decimal? superficie, int? poblacion, decimal? densidad)
+        {
+            return new XElement("Info",
+                new XElement("Superficie", superficie.GetValueOrDefault().ToString(CultureInfo.InvariantCulture)),
+                new XElement("Poblacion", 
+                    new XAttribute("Densidad", densidad.GetValueOrDefault().ToString(CultureInfo.InvariantCulture)),
+                    poblacion.GetValueOrDefault()
+                )
+            );
+        }
+        
+        private async Task LogAuditAsync(string user, string ip, string action, string detail)
+        {
+            await _auditRepository.AddAsync(new Auditoria { Usuario = user, IpAddress = ip, Accion = action, Detalle = detail });
         }
 
         private ComunaResponse MapToResponse(Comuna comuna)

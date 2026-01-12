@@ -24,12 +24,52 @@ namespace ValueTech.Web.Controllers
         }
 
         [HttpGet]
+        public IActionResult Create(int regionId)
+        {
+            var model = new ValueTech.Web.Models.ComunaFormViewModel
+            {
+                IdRegion = regionId
+            };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(ValueTech.Web.Models.ComunaFormViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var request = new ValueTech.Api.Contracts.Requests.CreateComunaRequest
+                {
+                    IdRegion = model.IdRegion,
+                    Nombre = model.Nombre,
+                    Superficie = model.Superficie,
+                    Poblacion = model.Poblacion,
+                    Densidad = model.Densidad
+                };
+
+                await _apiClient.CreateComunaAsync(request);
+                TempData["SuccessMessage"] = "Comuna creada correctamente.";
+                return RedirectToAction("Index", new { regionId = model.IdRegion });
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "No se pudo crear la comuna. " + ExtractErrorMessage(ex);
+                return View(model);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> Edit(int regionId, int id)
         {
             var comuna = await _apiClient.GetComunaByIdAsync(regionId, id);
             if (comuna == null) return NotFound();
 
-            var model = new UpdateComunaRequest
+            var model = new ValueTech.Web.Models.ComunaFormViewModel
             {
                 IdComuna = comuna.IdComuna,
                 IdRegion = comuna.IdRegion,
@@ -43,49 +83,35 @@ namespace ValueTech.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(int regionId, UpdateComunaRequest model)
+        public async Task<IActionResult> Edit(int regionId, ValueTech.Web.Models.ComunaFormViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState.Values
-                    .SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage)
-                    .Where(m => !string.IsNullOrWhiteSpace(m))
-                    .Select(msg => msg.Contains("The value") && msg.Contains("is invalid") 
-                                   ? "El tipo de dato ingresado no es válido." 
-                                   : msg);
-                
-                TempData["ErrorMessage"] = "Datos inválidos: " + string.Join(" | ", errors);
+                 // Custom error mapping if needed, or rely on asp-validation-summary
                 return View(model);
             }
 
             try
             {
-                await _apiClient.UpdateComunaAsync(regionId, model);
+                var request = new ValueTech.Api.Contracts.Requests.UpdateComunaRequest
+                {
+                    IdComuna = model.IdComuna,
+                    IdRegion = model.IdRegion,
+                    Nombre = model.Nombre,
+                    Superficie = model.Superficie,
+                    Poblacion = model.Poblacion,
+                    Densidad = model.Densidad
+                };
+
+                await _apiClient.UpdateComunaAsync(regionId, request);
                 TempData["SuccessMessage"] = "El registro se ha guardado correctamente.";
                 return RedirectToAction("Index", new { regionId = regionId });
             }
             catch (Exception ex)
             {
-                var msg = ex.Message;
-                var parts = msg.Split(new[] { " - " }, 2, StringSplitOptions.None);
-                if (parts.Length > 1)
-                {
-                    try 
-                    {
-                        var json = System.Text.Json.JsonDocument.Parse(parts[1]);
-                        if (json.RootElement.TryGetProperty("error", out var errorProp))
-                        {
-                            msg = errorProp.GetString() ?? parts[1];
-                        }
-                    }
-                    catch { /* Fallback to raw message if not valid JSON */ }
-                }
-                
-                TempData["ErrorMessage"] = msg;
+                TempData["ErrorMessage"] = ExtractErrorMessage(ex);
                 return View(model);
             }
-
         }
 
         [HttpPost]
@@ -98,17 +124,22 @@ namespace ValueTech.Web.Controllers
             }
             catch (Exception ex)
             {
-                var msg = ex.Message;
-                try 
-                {
-                   if(msg.Contains("Error:")) msg = msg.Split(new[] { " - " }, 2, StringSplitOptions.None).LastOrDefault() ?? msg;
-                   var json = System.Text.Json.JsonDocument.Parse(msg);
-                   if (json.RootElement.TryGetProperty("detail", out var detail)) msg = detail.GetString() ?? msg;
-                } catch { }
-
-                TempData["ErrorMessage"] = "No se pudo eliminar la comuna. " + msg;
+                TempData["ErrorMessage"] = "No se pudo eliminar la comuna. " + ExtractErrorMessage(ex);
             }
             return RedirectToAction("Index", new { regionId = regionId });
+        }
+
+        private string ExtractErrorMessage(Exception ex)
+        {
+            var msg = ex.Message;
+            try 
+            {
+                if(msg.Contains("Error:")) msg = msg.Split(new[] { " - " }, 2, StringSplitOptions.None).LastOrDefault() ?? msg;
+                var json = System.Text.Json.JsonDocument.Parse(msg);
+                if (json.RootElement.TryGetProperty("detail", out var detail)) msg = detail.GetString() ?? msg;
+                if (json.RootElement.TryGetProperty("error", out var error)) msg = error.GetString() ?? msg;
+            } catch { }
+            return msg;
         }
     }
 }

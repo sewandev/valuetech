@@ -136,6 +136,44 @@ namespace ValueTech.Data.Repositories
             }
         }
 
+        public async Task<int> CreateAsync(Comuna comuna)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var command = new SqlCommand("sp_Comuna_Create", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@IdRegion", comuna.IdRegion);
+                    command.Parameters.AddWithValue("@Comuna", comuna.Nombre);
+                    
+                    var xmlParam = new SqlParameter("@InformacionAdicional", SqlDbType.Xml)
+                    {
+                        Value = (object?)comuna.InformacionAdicional ?? DBNull.Value
+                    };
+                    command.Parameters.Add(xmlParam);
+
+                    var newIdParam = new SqlParameter("@NewId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(newIdParam);
+
+                    try
+                    {
+                        await command.ExecuteNonQueryAsync();
+                        return Convert.ToInt32(newIdParam.Value);
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Database error creating comuna");
+                        throw;
+                    }
+                }
+            }
+        }
+
         private Comuna MapToComuna(SqlDataReader reader)
         {
             var c = new Comuna

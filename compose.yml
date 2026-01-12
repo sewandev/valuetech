@@ -27,13 +27,18 @@ services:
     command: >
       /bin/bash -c "
       echo 'Esperando a SQL Server...';
-      sleep 15;
+      until /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -Q 'SELECT 1' > /dev/null 2>&1; do
+        echo 'SQL Server no está listo todavía. Reintentando en 1 seg...';
+        sleep 1;
+      done;
+      echo 'SQL Server listo. Ejecutando migraciones...';
       /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d master -i /scripts/01-schema.sql;
       /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d ValueTechDB -i /scripts/02-procedures.sql;
       /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d ValueTechDB -i /scripts/03-seed-data.sql;
       /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d ValueTechDB -i /scripts/04-seed-chile.sql;
       /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d ValueTechDB -i /scripts/05-create-users.sql;
       /opt/mssql-tools/bin/sqlcmd -S valuetech_sql -U sa -P ValueTech_2024! -d ValueTechDB -i /scripts/06-create-audit.sql;
+      echo 'Migraciones completadas exitosamente.';
       "
 
   api:

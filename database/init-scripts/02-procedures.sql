@@ -77,3 +77,26 @@ BEGIN
     DELETE FROM Comuna WHERE IdComuna = @IdComuna;
 END
 GO
+CREATE OR ALTER PROCEDURE [dbo].[sp_Region_Create]
+    @Region nvarchar(64),
+    @NewId int OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO Region (Region) VALUES (@Region);
+    SET @NewId = SCOPE_IDENTITY();
+END
+GO
+CREATE OR ALTER PROCEDURE [dbo].[sp_Comuna_Create]
+    @IdRegion int,
+    @Comuna nvarchar(128),
+    @InformacionAdicional xml,
+    @NewId int OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO Comuna (IdRegion, Comuna, InformacionAdicional) 
+    VALUES (@IdRegion, @Comuna, @InformacionAdicional);
+    SET @NewId = SCOPE_IDENTITY();
+END
+GO

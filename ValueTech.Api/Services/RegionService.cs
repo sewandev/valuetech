@@ -1,5 +1,7 @@
 using ValueTech.Data.Interfaces;
 using ValueTech.Api.Contracts.Responses;
+using ValueTech.Api.Contracts.Requests;
+using ValueTech.Data.Models;
 using Microsoft.Extensions.Logging;
 
 
@@ -38,6 +40,23 @@ namespace ValueTech.Api.Services
                 IdRegion = region.IdRegion,
                 Nombre = region.Nombre
             };
+        }
+
+        public async Task<int> CreateAsync(CreateRegionRequest request, string auditUser, string auditIp)
+        {
+            var region = new Region { Nombre = request.Nombre };
+            var newId = await _repository.CreateAsync(region);
+            
+            await _auditRepository.AddAsync(new Auditoria
+            {
+                Usuario = auditUser,
+                IpAddress = auditIp,
+                Accion = "CREATE_REGION",
+                Detalle = $"NewId: {newId}, Nombre: {request.Nombre}"
+            });
+
+            _logger.LogInformation("Region {Id} creada exitosamente por {User}.", newId, auditUser);
+            return newId;
         }
 
         public async Task DeleteAsync(int id, string auditUser, string auditIp)

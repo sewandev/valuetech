@@ -1,0 +1,11 @@
+@model ValueTech.Web.Models.RegionFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<input type="hidden" asp-for="IdRegion" />
+
+<div class="form-group mb-3">
+    <label asp-for="Nombre" class="control-label">Nombre de la Región</label>
+    <input asp-for="Nombre" class="form-control" placeholder="Ingrese nombre de la región" />
+    <span asp-validation-for="Nombre" class="text-danger"></span>
+</div>

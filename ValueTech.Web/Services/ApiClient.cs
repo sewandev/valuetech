@@ -86,8 +86,54 @@ namespace ValueTech.Web.Services
                  catch (JsonException) { /* Fallback to raw content if not JSON */ }
 
                  throw new HttpRequestException($"Error: {response.StatusCode} - {errorContent}");
+
             }
         }
+
+        public async Task CreateRegionAsync(CreateRegionRequest request)
+        {
+            await SendPostAsync("/api/region", request);
+        }
+
+        public async Task CreateComunaAsync(CreateComunaRequest request)
+        {
+            await SendPostAsync($"/api/region/{request.IdRegion}/comuna", request);
+        }
+
+        private async Task SendPostAsync<T>(string uri, T payload)
+        {
+            var json = JsonSerializer.Serialize(payload);
+            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+            var context = _httpContextAccessor.HttpContext;
+            if (context != null)
+            {
+                if (context.User.Identity?.IsAuthenticated == true)
+                {
+                    content.Headers.Add("X-Audit-User", context.User.Identity.Name);
+                }
+                content.Headers.Add("X-Audit-IP", context.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+            }
+
+            var response = await _httpClient.PostAsync(uri, content);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                 var errorContent = await response.Content.ReadAsStringAsync();
+                 try 
+                 {
+                     var errorObj = JsonSerializer.Deserialize<JsonElement>(errorContent);
+                     if(errorObj.TryGetProperty("detail", out var detail)) 
+                     {
+                         throw new HttpRequestException(detail.GetString());
+                     }
+                 } 
+                 catch (JsonException) { /* Fallback to raw content if not JSON */ }
+
+                 throw new HttpRequestException($"Error: {response.StatusCode} - {errorContent}");
+            }
+        }
+
 
         public async Task UpdateComunaAsync(int regionId, UpdateComunaRequest request)
         {

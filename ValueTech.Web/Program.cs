@@ -6,7 +6,13 @@ using System.IO;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .ConfigureApplicationPartManager(parts => 
+    {
+        var apiAssembly = typeof(ValueTech.Api.Controllers.RegionController).Assembly;
+        var part = parts.ApplicationParts.FirstOrDefault(p => p.Name == apiAssembly.GetName().Name);
+        if (part != null) parts.ApplicationParts.Remove(part);
+    });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDataProtection()
     .PersistKeysToFileSystem(new DirectoryInfo("/app/keys"))

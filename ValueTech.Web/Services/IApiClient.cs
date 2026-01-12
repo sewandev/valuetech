@@ -13,5 +13,7 @@ namespace ValueTech.Web.Services
         Task<IEnumerable<Data.Models.Auditoria>> GetAuditLogsAsync();
         Task DeleteRegionAsync(int id);
         Task DeleteComunaAsync(int regionId, int comunaId);
+        Task CreateRegionAsync(CreateRegionRequest request);
+        Task CreateComunaAsync(CreateComunaRequest request);
     }
 }

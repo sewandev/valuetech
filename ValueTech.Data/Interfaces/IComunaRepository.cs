@@ -8,5 +8,6 @@ namespace ValueTech.Data.Interfaces
         Task<Comuna?> GetByIdAsync(int idComuna);
         Task UpdateAsync(Comuna comuna);
         Task DeleteAsync(int idComuna);
+        Task<int> CreateAsync(Comuna comuna);
     }
 }

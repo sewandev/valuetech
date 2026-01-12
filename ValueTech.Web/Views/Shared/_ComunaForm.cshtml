@@ -1,0 +1,30 @@
+@model ValueTech.Web.Models.ComunaFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<input type="hidden" asp-for="IdComuna" />
+<input type="hidden" asp-for="IdRegion" />
+
+<div class="form-group mb-3">
+    <label asp-for="Nombre" class="control-label">Nombre de la Comuna</label>
+    <input asp-for="Nombre" class="form-control" placeholder="Ingrese nombre" />
+    <span asp-validation-for="Nombre" class="text-danger"></span>
+</div>
+
+<div class="form-group mb-3">
+    <label asp-for="Superficie" class="control-label">Superficie (km²)</label>
+    <input asp-for="Superficie" class="form-control" type="number" step="0.01" />
+    <span asp-validation-for="Superficie" class="text-danger"></span>
+</div>
+
+<div class="form-group mb-3">
+    <label asp-for="Poblacion" class="control-label">Población</label>
+    <input asp-for="Poblacion" class="form-control" type="number" />
+    <span asp-validation-for="Poblacion" class="text-danger"></span>
+</div>
+
+<div class="form-group mb-3">
+    <label asp-for="Densidad" class="control-label">Densidad (hab/km²)</label>
+    <input asp-for="Densidad" class="form-control" type="number" step="0.01" />
+    <span asp-validation-for="Densidad" class="text-danger"></span>
+</div>

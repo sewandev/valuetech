@@ -97,7 +97,38 @@ namespace ValueTech.Data.Repositories
                     }
                     catch (SqlException ex)
                     {
-                        _logger.LogError(ex, "Error eliminando región {Id}.", idRegion);
+                        _logger.LogError(ex, "Database error deleting region {Id}", idRegion);
+                        throw;
+                    }
+                }
+            }
+        }
+
+        public async Task<int> CreateAsync(Region region)
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+                
+                using (var command = new SqlCommand("sp_Region_Create", connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@Region", region.Nombre);
+                    
+                    var newIdParam = new SqlParameter("@NewId", SqlDbType.Int)
+                    {
+                        Direction = ParameterDirection.Output
+                    };
+                    command.Parameters.Add(newIdParam);
+
+                    try 
+                    {
+                        await command.ExecuteNonQueryAsync();
+                        return Convert.ToInt32(newIdParam.Value);
+                    }
+                    catch (SqlException ex)
+                    {
+                        _logger.LogError(ex, "Database error creating region");
                         throw;
                     }
                 }

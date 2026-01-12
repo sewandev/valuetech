@@ -9,5 +9,6 @@ namespace ValueTech.Api.Services
         Task<ComunaResponse?> GetByIdAsync(int idComuna);
         Task UpdateAsync(int id, UpdateComunaRequest request, string auditUser, string auditIp);
         Task DeleteAsync(int id, string auditUser, string auditIp);
+        Task<int> CreateAsync(CreateComunaRequest request, string auditUser, string auditIp);
     }
 }

@@ -1,10 +1,10 @@
 @model ValueTech.Web.Models.ComunaFormViewModel
 
 @{
-    ViewData["Title"] = "Editar Comuna";
+    ViewData["Title"] = "Crear Comuna";
 }
 
-<h1>Editar Comuna: @Model.Nombre</h1>
+<h1>Crear Nueva Comuna</h1>
 
 @if (TempData["ErrorMessage"] != null)
 {
@@ -15,11 +15,11 @@
 
 <div class="row">
     <div class="col-md-6">
-        <form asp-action="Edit" asp-route-regionId="@Model.IdRegion">
+        <form asp-action="Create" asp-route-regionId="@Model.IdRegion">
             <partial name="_ComunaForm" model="Model" />
 
-            <div class="form-group">
-                <input type="submit" value="Guardar Cambios" class="btn btn-primary" />
+            <div class="form-group mt-3">
+                <input type="submit" value="Crear Comuna" class="btn btn-success" />
                 <a asp-action="Index" asp-route-regionId="@Model.IdRegion" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>

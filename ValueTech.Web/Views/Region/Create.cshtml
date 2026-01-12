@@ -1,0 +1,27 @@
+@model ValueTech.Web.Models.RegionFormViewModel
+
+@{
+    ViewData["Title"] = "Crear Región";
+}
+
+<h1>Crear Nueva Región</h1>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Create">
+            <partial name="_RegionForm" model="Model" />
+
+            <div class="form-group mt-3">
+                <input type="submit" value="Crear Región" class="btn btn-success" />
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
