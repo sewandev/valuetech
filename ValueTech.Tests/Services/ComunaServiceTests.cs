@@ -121,5 +121,75 @@ namespace ValueTech.Tests.Services
             mockRepo.Verify(r => r.UpdateAsync(It.IsAny<Comuna>()), Times.Never);
             mockAudit.Verify(a => a.AddAsync(It.IsAny<Auditoria>()), Times.Never);
         }
+        [Fact]
+        public async Task CreateAsync_ShouldCallRepoAndAudit_WhenRequestIsValid()
+        {
+            // Arrange
+            var mockRepo = new Mock<IComunaRepository>();
+            var mockAudit = new Mock<IAuditoriaRepository>();
+            var mockLogger = new Mock<Microsoft.Extensions.Logging.ILogger<ComunaService>>();
+            var service = new ComunaService(mockRepo.Object, mockAudit.Object, mockLogger.Object);
+
+            var request = new Api.Contracts.Requests.CreateComunaRequest 
+            { 
+                IdRegion = 1,
+                Nombre = "Nueva Comuna",
+                Superficie = 100.5m,
+                Poblacion = 5000,
+                Densidad = 49.7m
+            };
+            var expectedNewId = 200;
+            string testUser = "AdminUser";
+            string testIp = "192.168.1.10";
+
+            mockRepo.Setup(r => r.CreateAsync(It.IsAny<Comuna>()))
+                .ReturnsAsync(expectedNewId);
+
+            // Act
+            var result = await service.CreateAsync(request, testUser, testIp);
+
+            // Assert
+            Assert.Equal(expectedNewId, result);
+
+            mockRepo.Verify(r => r.CreateAsync(It.Is<Comuna>(c => 
+                c.Nombre == request.Nombre &&
+                c.IdRegion == request.IdRegion &&
+                c.InformacionAdicional.Contains(request.Superficie.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))
+            )), Times.Once);
+
+            mockAudit.Verify(a => a.AddAsync(It.Is<Auditoria>(x => 
+                x.Usuario == testUser && 
+                x.IpAddress == testIp && 
+                x.Accion == "CREATE_COMUNA"
+            )), Times.Once);
+        }
+
+        [Fact]
+        public async Task DeleteAsync_ShouldCallRepoAndAudit_WhenExistingId()
+        {
+            // Arrange
+            var mockRepo = new Mock<IComunaRepository>();
+            var mockAudit = new Mock<IAuditoriaRepository>();
+            var mockLogger = new Mock<Microsoft.Extensions.Logging.ILogger<ComunaService>>();
+            var service = new ComunaService(mockRepo.Object, mockAudit.Object, mockLogger.Object);
+
+            int regionId = 1;
+            int comunaId = 50;
+            string testUser = "AdminUser";
+            string testIp = "10.0.0.1";
+
+            // Act
+            await service.DeleteAsync(comunaId, testUser, testIp);
+
+            // Assert
+            mockRepo.Verify(r => r.DeleteAsync(comunaId), Times.Once);
+
+            mockAudit.Verify(a => a.AddAsync(It.Is<Auditoria>(x => 
+                x.Usuario == testUser && 
+                x.IpAddress == testIp && 
+                x.Accion == "DELETE_COMUNA" &&
+                x.Detalle.Contains(comunaId.ToString())
+            )), Times.Once);
+        }
     }
 }
