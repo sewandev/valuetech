@@ -64,7 +64,7 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=Server=valuetech_sql;Database=ValueTechDB;User Id=sa;Password=ValueTech_2024!;TrustServerCertificate=True;
       - Authentication__ApiKey=ValueTech-Secret-Key-2026
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=${APP_ENV:-Development}
       - TZ=America/Santiago
       - DOTNET_USE_POLLING_FILE_WATCHER=true
     volumes:
@@ -88,7 +88,7 @@ services:
     environment:
       - ApiBaseUrl=http://valuetech_api:8080
       - Authentication__ApiKey=ValueTech-Secret-Key-2026
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=${APP_ENV:-Development}
       - TZ=America/Santiago
       - DOTNET_USE_POLLING_FILE_WATCHER=true
     depends_on:

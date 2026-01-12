@@ -40,6 +40,7 @@ jobs:
             ${{ secrets.SSH_PEM_KEY }}
           debug: true
           script: |
+            export APP_ENV=Production
             cd /home/ubuntu/valuetech
             # Ensure Docker is installed or just run compose
             # Force rebuild to pick up new code changes
