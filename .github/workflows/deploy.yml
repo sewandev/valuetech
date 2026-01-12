@@ -17,7 +17,8 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PEM_KEY }}
+          key: |
+            ${{ secrets.SSH_PEM_KEY }}
           source: "."
           target: "/home/ubuntu/valuetech"
           rm: true 
@@ -25,9 +26,9 @@ jobs:
       - name: Execute Remote Docker Compose
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PEM_KEY }}
+          key: |
+            ${{ secrets.SSH_PEM_KEY }}
+          debug: true
           script: |
             cd /home/ubuntu/valuetech
             # Ensure Docker is installed or just run compose
