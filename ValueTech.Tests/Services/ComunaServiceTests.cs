@@ -154,7 +154,7 @@ namespace ValueTech.Tests.Services
             mockRepo.Verify(r => r.CreateAsync(It.Is<Comuna>(c => 
                 c.Nombre == request.Nombre &&
                 c.IdRegion == request.IdRegion &&
-                c.InformacionAdicional.Contains(request.Superficie.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))
+                (c.InformacionAdicional ?? "").Contains(request.Superficie.Value.ToString(System.Globalization.CultureInfo.InvariantCulture))
             )), Times.Once);
 
             mockAudit.Verify(a => a.AddAsync(It.Is<Auditoria>(x => 
@@ -173,7 +173,6 @@ namespace ValueTech.Tests.Services
             var mockLogger = new Mock<Microsoft.Extensions.Logging.ILogger<ComunaService>>();
             var service = new ComunaService(mockRepo.Object, mockAudit.Object, mockLogger.Object);
 
-            int regionId = 1;
             int comunaId = 50;
             string testUser = "AdminUser";
             string testIp = "10.0.0.1";

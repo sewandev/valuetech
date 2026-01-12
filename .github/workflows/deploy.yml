@@ -13,6 +13,9 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      - name: Run Tests
+        run: dotnet test ValueTech.Tests --logger "console;verbosity=normal"
+
       - name: Copy files to Server (SCP)
         uses: appleboy/scp-action@master
         with:
@@ -21,8 +24,7 @@ jobs:
           key: |
             ${{ secrets.SSH_PEM_KEY }}
           source: "."
-          target: "/home/ubuntu/valuetech"
-          rm: true 
+          target: "/home/ubuntu/valuetech" 
       
       - name: Execute Remote Docker Compose
         uses: appleboy/ssh-action@master
