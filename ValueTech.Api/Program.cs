@@ -2,8 +2,16 @@ using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
 using ValueTech.Data;
 using ValueTech.Api.Services;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configurar Serilog
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext()
+    .WriteTo.Console());
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrEmpty(connectionString))
@@ -71,7 +79,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+
 app.UseMiddleware<ValueTech.Api.Middlewares.GlobalExceptionMiddleware>();
 
 app.UseRateLimiter(); // Activar Rate Limiting

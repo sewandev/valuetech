@@ -13,6 +13,18 @@ services:
     networks:
       - valuetech-net
 
+  seq:
+    container_name: valuetech_seq
+    image: datalust/seq:2024.3
+    ports:
+      - "8081:80"
+    environment:
+      - ACCEPT_EULA=Y
+    volumes:
+      - seq_data:/data
+    networks:
+      - valuetech-net
+
   migrator:
     container_name: valuetech_migrator
     image: mcr.microsoft.com/mssql-tools:latest
@@ -91,3 +103,4 @@ networks:
 volumes:
   sql_data_v2:
   keys_data:
+  seq_data:

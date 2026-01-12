@@ -22,6 +22,7 @@
 | **Frontend Web** | [`https://prueba-valuetech.mawan.dev/`](https://prueba-valuetech.mawan.dev/) | User: `admin` / `admin123` |
 | **API Swagger** | [`https://prueba-valuetech.mawan.dev/swagger`](https://prueba-valuetech.mawan.dev/swagger) | API Key: `ValueTech-Secret-Key-2026` (Botón Authorize) |
 | **API Endpoint** | [`https://prueba-valuetech.mawan.dev/api/`](https://prueba-valuetech.mawan.dev/api/) | Base URL para API Client |
+| **Registro de Logs** | [`https://prueba-valuetech.mawan.dev/seq`](https://prueba-valuetech.mawan.dev/seq)  | LOGS
 | **SQL Server** | `localhost:1433` | User: `sa` / `ValueTech_2024!` |
 
 ## Stack Tecnológico

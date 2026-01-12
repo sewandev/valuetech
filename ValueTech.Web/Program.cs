@@ -1,11 +1,19 @@
 using ValueTech.Web.Services;
 using Microsoft.AspNetCore.DataProtection;
 using System.IO;
+using Serilog;
 
 
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configurar Serilog
+builder.Host.UseSerilog((context, services, configuration) => configuration
+    .ReadFrom.Configuration(context.Configuration)
+    .ReadFrom.Services(services)
+    .Enrich.FromLogContext()
+    .WriteTo.Console());
 builder.Services.AddControllersWithViews()
     .ConfigureApplicationPartManager(parts => 
     {

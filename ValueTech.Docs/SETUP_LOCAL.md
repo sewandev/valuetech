@@ -7,7 +7,7 @@
 
 ## Prerrequisitos
 
-Para garantizar la correcta ejecución de la solución, el equipo debe contar con el siguiente software instalado:
+Para garantizar la correcta ejecución de la solución, debe contar con el siguiente software instalado:
 
 *   **[Docker Desktop para Windows](https://www.docker.com/products/docker-desktop/)**: Configurado con *WSL 2 backend*.
 *   **[Git for Windows](https://git-scm.com/download/win)**: Para el control de versiones.
@@ -26,8 +26,6 @@ cd valuetech
 
 <details>
 <summary><strong>Opción 1: Full Docker (Recomendado)</strong></summary>
-
-ValueTech utiliza `docker compose` para construir las imágenes de la API y el Frontend, y orquestarlas junto con la base de datos SQL Server. El proceso de construcción utiliza *Multi-Stage Builds* para optimizar el tamaño de las imágenes.
 
 Ejecute el siguiente comando en PowerShell en la raíz del proyecto:
 
