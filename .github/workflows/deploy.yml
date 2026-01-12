@@ -16,6 +16,11 @@ jobs:
       - name: Run Tests
         run: dotnet test ValueTech.Tests --logger "console;verbosity=normal"
 
+      - name: Clean Artifacts (bin/obj)
+        run: |
+          find . -name "bin" -type d -prune -exec rm -rf '{}' +
+          find . -name "obj" -type d -prune -exec rm -rf '{}' +
+
       - name: Copy files to Server (SCP)
         uses: appleboy/scp-action@master
         with:
